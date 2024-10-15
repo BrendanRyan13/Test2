@@ -1,0 +1,80 @@
+---
+title: "Project 1"
+author: "Brendan Ryan"
+output:
+  html_document:
+    toc: true
+    toc_float: true 
+    toc_depth: 5
+    theme: journal
+---
+
+```{r, echo = FALSE}
+#Set up the document, and import data
+setwd("C:/Users/frogb/Documents/SDS313")
+AdData <- read.csv("Project1_SuperBowlAds.csv")
+library(ggplot2)
+Ad_ggplot <- ggplot(AdData)
+```
+# Introduction
+The data set is a collection of information about different Super Bowl Ads that have broadcasted since 2000. The variables seek to express the overall popularity of the ads, as well as their contents. The data is sourced from [FiveThirtyEight.com](https://projects.fivethirtyeight.com/super-bowl-ads/). The outcome variable being analyzed is the proportion of the number of likes a Super Bowl Ad has on Youtube vs. its view count. The predictors being investigated in their relationship to the number of likes is whether or not it is patriotic, whether or not it includes a celebrity, and whether or not it uses sexual appeal.
+
+![](https://s3-prod.adage.com/s3fs-public/20231127_2024_Super_Bowl_ad_chart_1700w.jpg)
+
+<font size = "1"> Photo credits to [Adage.com](https://adage.com/article/special-report-super-bowl/super-bowl-2024-commercials-and-brand-buys-and-agencies/2531531) </font>
+
+# Outcome Variable 
+This graph shows the distribution of the likes per view. Most values fall between 0 and 1, with there being a few outliers around 2 and 3. The reason why the ratio of likes per view was selected as opposed to the number of likes is because likes fails to demonstrate the reception of a video, just the overall traffic. Likes per view will better show which advertisements were well-received by watchers as opposed to just the amount of people seeing the ads. A really bad ad may garner lots of attention, but that does not mean it was liked or effective. Additionally, the scale was set to likes per 100 views to better show the relation.
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+#Create a new variable of likes per views
+AdData$LikesPer100 <- (AdData$like_count*100)/(AdData$view_count)
+#Create a histogram to display distribution of the likes data
+Ad_ggplot + geom_histogram(aes(x = AdData$LikesPer100), fill = "lightpink", binwidth = 0.10) + 
+                labs(
+                  #Add titles and labels
+                  title = "Distribution of the Ratio of Likes Per 100 Views",
+                  x = "Likes Per 100 Views",
+                  y = "Number of Videos"
+                )
+AdData$YNpatriotic <- ifelse(AdData$patriotic == TRUE, "YES", "NO")
+AdData$YNcelebrity <- ifelse(AdData$celebrity == TRUE, "YES", "NO")
+AdData$YNuse_sex <- ifelse(AdData$use_sex == TRUE, "YES", "NO")
+```
+
+The minimum value of likes per 100 views is `r min(AdData$LikesPer100, na.rm = TRUE)`, and the maximum value is `r round(max(AdData$LikesPer100, na.rm = TRUE), 2)`, which is this advertisement by [Bud Lite](https://www.youtube.com/watch?v=mjN3OY9Eefk). The average number of likes per 100 was `r round(mean(AdData$LikesPer100, na.rm = TRUE), 2)`.The first and third quartiles are `r round(quantile(AdData$LikesPer100, probs = c(0.25, 0.75), na.rm = TRUE), 2)` respectively, meaning that 50% of the data lies between those two numbers.
+
+# Bivariate Analysis
+```{r, echo = FALSE, warning = FALSE}
+Ad_ggplot + geom_boxplot(aes(x = AdData$LikesPer100, y = AdData$YNpatriotic), color = "blue", fill = "red")   +labs(title = "Likes per 100 Views Based on if the Ad is Patriotic",
+        x = "Likes per 100 views",
+        y = "Is the ad patriotic?")
+```
+
+The median likes per 100 views for ads with themes of patriotism is `r round(median(AdData$LikesPer100[AdData$patriotic == TRUE], na.rm = TRUE), 2)` and the median for ads without is `r round(median(AdData$LikesPer100[AdData$patriotic == FALSE], na.rm = TRUE), 2)`. This shows there is a **slight advantage** to being patriotic.
+
+
+
+```{r, echo = FALSE, warning=FALSE}
+Ad_ggplot + geom_boxplot(aes(x = AdData$LikesPer100, y = AdData$YNcelebrity), color = "blue", fill = "red")   +labs(title = "Likes per 100 Views Based on if the Ad Contains a Celebrity",
+        x = "Likes per 100 views",
+        y = "Does the ad contain a celebrity?")
+```
+
+The median likes per 100 views for ads with celebrities is `r round(median(AdData$LikesPer100[AdData$celebrity == TRUE], na.rm = TRUE), 2)` and the median for ads without is `r round(median(AdData$LikesPer100[AdData$celebrity == FALSE], na.rm = TRUE), 2)`. This shows there is a  **strong advantage** to having a celebrity.
+
+```{r, echo = FALSE, warning=FALSE}
+Ad_ggplot + geom_boxplot(aes(x = AdData$LikesPer100, y = AdData$YNuse_sex), color = "blue", fill = "red")   +labs(title = "Likes per 100 Views Based on the Use of Sex",
+        x = "Likes per 100 views",
+        y = "Does the ad use sex?")
+```
+
+The mean likes per 100 views for ads with a sexual appeal is `r round(median(AdData$LikesPer100[AdData$use_sex == TRUE], na.rm = TRUE), 2)` and the mean for ads without is `r round(median(AdData$LikesPer100[AdData$use_sex == FALSE], na.rm = TRUE), 2)`. This shows that there is almost no impact on including sex in an advertisement.
+
+# Choice Elements
+I picked elements A, B, C, D, and E to enhance my analysis of the data. <font size = "4"> Element A</font> was two or more in-line codes. This was used in a variety of places, for example, when describing the important statistics of the univariate data set, I used in-line code to describe the min, max, and mean of my likes per 100 views variable. <font size = "4"> Element B</font> was to include two working hyperlinks that further explain the data source. The first hyperlink was in the introduction to cite the data source, so readers could follow the link for more information on the dataset. Additionally, I used a hyperlink when discussing the outcome variable to provide a link to the ad that had the highest like per view ratio. <font size = "4"> Element C</font> I used in to shrink the size of the citation of the picture, because it is not as important as the rest of the analysis. I also used it in this summary of choice elements to highlight the elements I fulfilled. <font size = "4"> Element D</font> I created the floating table at the beginning of the project, and organized it by the five sections of the project. This helped me keep the project organized, and made it easier for the reader to navigate. <font size = "4"> Element E</font> I felt that the like count alone lacked context, so I made my outcome variable a ratio of likes per views instead. This allowed me to better understand which videos were the most well received.
+
+# Conclusion
+After looking at three predictor variables, it is clear that a celebrity has the highest impact on the likability an ad, patriotism has a slight impact, and sexual appeal has little to no impact. Future research could like at some of the other variables in the dataset, like whether or not an ad shows the product quickly, if there is danger, or if the ad includes animals. 
+**References:**
+https://adage.com/article/special-report-super-bowl/super-bowl-2024-commercials-and-brand-buys-and-agencies/2531531
+https://projects.fivethirtyeight.com/super-bowl-ads/
